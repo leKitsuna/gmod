@@ -2,8 +2,9 @@
 --@author kitsune.
 --@client
 
+//Links from Discord or other supported by Starfall sources.
+local url = "https://cdn.discordapp.com/attachments/1151063343742849024/1176439922572410900/MORE_MORE_JUMP_.mp3?ex=6593ca0e&is=6581550e&hm=3938830c9162da632ec5365d757999c4b08964a14dcf3c26edd753b97669e11b&"
 local music = nil
-local url = "https://cdn.discordapp.com/attachments/1151562554636767283/1174004152096006204/83ba01b5561ce79b.mp3?ex=65942811&is=6581b311&hm=2893b47877ea91d36287057b296701d863d124739132c247c9d3177805e62477&"
 local vol = 1
 local distance = 500
 
@@ -11,7 +12,7 @@ local function play(object)
     object:setPos(chip():getPos())
     object:setVolume(vol)
     object:setLooping(1)
-    object:setFade(100, 300)
+    object:setFade(300, 600)
     object:play()
     music = object
 end
@@ -19,6 +20,7 @@ end
 bass.loadURL(url,"3d noblock",function(m) play(m,m:getLength())end)
 
 hook.add("Think","while"..owner():getSteamID64(),function()
+    
     if music == nil  then return end
     
     if !music:isValid() then return end
@@ -30,11 +32,12 @@ hook.add("Think","while"..owner():getSteamID64(),function()
 end)
 
 hook.add("PlayerChat","discordMP3PlayerChat"..owner():getSteamID64(),function(ply,txt)
+    
     if ply ~= owner() then return end
     
-    if txt == "!skip" then music:stop() return end
+    if txt == "!stop" then music:stop() return end
     
-    if txt == "!pause" or txt == "!stop" then music:pause() return end
+    if txt == "!pause" then music:pause() return end
     
     if txt == "!play" then music:play() return end
     

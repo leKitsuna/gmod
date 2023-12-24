@@ -1,0 +1,53 @@
+--@name lalala
+--@author kitsune.
+--@client
+
+local music = nil
+local url = "https://cdn.discordapp.com/attachments/1151562554636767283/1174004152096006204/83ba01b5561ce79b.mp3?ex=65942811&is=6581b311&hm=2893b47877ea91d36287057b296701d863d124739132c247c9d3177805e62477&"
+local vol = 1
+local distance = 500
+
+local function play(object)
+    object:setPos(chip():getPos())
+    object:setVolume(vol)
+    object:setLooping(1)
+    object:setFade(100, 300)
+    object:play()
+    music = object
+end
+
+bass.loadURL(url,"3d noblock",function(m) play(m,m:getLength())end)
+
+hook.add("Think","while"..owner():getSteamID64(),function()
+    if music == nil  then return end
+    
+    if !music:isValid() then return end
+    
+    music:setPos(owner():getPos() + Vector(0, 0, 30))
+    
+    if owner():getPos():getDistance(player():getPos()) > distance then music:setVolume(0) end
+    
+end)
+
+hook.add("PlayerChat","discordMP3PlayerChat"..owner():getSteamID64(),function(ply,txt)
+    if ply ~= owner() then return end
+    
+    if txt == "!skip" then music:stop() return end
+    
+    if txt == "!pause" or txt == "!stop" then music:pause() return end
+    
+    if txt == "!play" then music:play() return end
+    
+    if string.startWith(txt,"!volume") then 
+        vol = tonumber(string.replace(string.split(txt,"!volume")[2]," ",""))
+        if vol > 1 then vol = vol / 100 end
+        music:setVolume(vol)
+    return end
+    
+    if string.startWith(txt,"!change") then 
+        url = string.replace(string.split(txt,"!change")[2]," ","")
+        music:destroy()
+        bass.loadURL(url,"3d noblock",function(m) play(m)end)    
+    return end
+    
+end)
